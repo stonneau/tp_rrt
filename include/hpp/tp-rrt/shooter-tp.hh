@@ -23,13 +23,10 @@
 # include <hpp/model/joint.hh>
 # include <hpp/model/joint-configuration.hh>
 # include <hpp/core/configuration-shooter.hh>
+# include <hpp/tp-rrt/fwd.hh>
 
 namespace hpp {
 namespace tp_rrt {
-
-class ShooterTP;
-typedef boost::shared_ptr <ShooterTP> ShooterTPPtr_t;
-typedef boost::weak_ptr <ShooterTP> ShooterTPWkPtr_t;
 
 /// \addtogroup configuration_sampling
 /// \{

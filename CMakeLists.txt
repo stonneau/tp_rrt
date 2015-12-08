@@ -46,6 +46,7 @@ ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 3")
 SET(${PROJECT_NAME}_HEADERS
     include/hpp/tp-rrt/shooter-tp.hh
     include/hpp/tp-rrt/planner-tp.hh
+    include/hpp/tp_rrt/steering-method.hh
   )
 
 ADD_SUBDIRECTORY(src)

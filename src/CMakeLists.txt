@@ -22,6 +22,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 ADD_EXECUTABLE (hpp-tp-rrt
   shooter-tp.cc ${PROJECT_SOURCE_DIR}/include/hpp/tp-rrt/shooter-tp.hh
   planner-tp.cc ${PROJECT_SOURCE_DIR}/include/hpp/tp-rrt/planner-tp.hh
+  flat-path.cc ${PROJECT_SOURCE_DIR}/include/hpp/tp-rrt/flat-path.hh
+  ${PROJECT_SOURCE_DIR}/include/hpp/tp-rrt/steering-method.hh
   main.cc
 )
 # Link executable with hpp-corbaserver library

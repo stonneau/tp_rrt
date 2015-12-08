@@ -1,0 +1,93 @@
+\documentclass {article}
+
+\usepackage{amsfonts} % pour les lettres maths creuses \mathbb
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[frenchb]{babel}
+\usepackage{aeguill}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{color}
+
+\newcommand\dx{\dot{x}}
+\newcommand\dy{\dot{y}}
+\newcommand\ddx{\ddot{x}}
+\newcommand\ddy{\ddot{y}}
+\def\real{{\mathbb R}}
+
+\author {Florent Lamiraux et Steve Tonneau\\
+CNRS-LAAS, Toulouse, France}
+\title {Tutorial HPP}
+\date {}
+
+\begin {document}
+\maketitle
+
+\section {Steering method}
+
+\begin {figure}
+  \centerline {
+    \def\svgwidth {.6\linewidth}
+                  {\graphicspath {{./figures/}}
+                    \input {figures/car-flat.pdf_tex}
+                  }
+  }
+  \caption {Modèle cinématique de voiture. La configuration de la voiture est représentée par le vecteur $(x,y,\cos\theta,\sin\theta,\zeta)$.}
+  \label{fig:voiture} 
+\end {figure}
+
+Une méthode de guidage \texttt{hpp::core::SteeringMethod} est une
+classe qui construit des chemins entre des paires de configurations
+d'un robot. Son r\^ole est de prendre en compte la cinématique
+particulière du robot en question. Par exemple, un robot de type
+voiture ne peut pas exécuter n'importe quel mouvement, à cause des
+contraintes de roulement sans glissement des roues.
+
+L'objectif de ce tutoriel est de développer une méthode de guidage
+respectant les contraintes de roulement sans glissement d'un robot de
+type voiture.
+
+Pour cela, les étapes suivantes sont nécessaires~:
+\begin {enumerate}
+\item dériver la classe \texttt{hpp::core::Path} afin de modéliser des trajectoires respectant les contraintes de roulement sans glissement de la voiture,
+\item dériver la classe \texttt{hpp::core::SteeringMethod} afin de créer une méthode de guidage produisant des chemins du type défini à l'étape précédente entre deux configurations données,
+\item rendre cette méthode de guidage accessible dans les scripts python.
+\end {enumerate}
+Le point~1 ci-dessus fait l'objet de la partie suivante.
+
+\subsection {Trajectoires respectant les contraintes de roulement sans glissement}
+\subsubsection* {Platitude différentielle}
+
+Considérons la voiture représentée sur la figure~\ref{fig:voiture}. C'est un système dit différentiellement plat, dont la sortie plate est le centre de l'axe des roues arrières $(x,y)$. Cela signifie que la trajectoire dans le plan de $(x,y)$ permet de reconstruire la configuration du système uniquement par dérivation.
+
+En effet, soit
+\begin {itemize}
+  \item $(x,y)$ la position du centre de l'axe des roues arrières,
+  \item $(\dx, \dy)$ sa vitesse,
+  \item $(\ddx, \ddy)$ son accélération.
+\end {itemize}
+A condition que la vitesse soit non-nulle, on peut établir les relations suivantes~:
+\begin {align}\label{eq:orientation}
+  \cos(\theta) = \frac{\dx}{\sqrt{\dx^2+\dy^2}} & \hspace {1cm} & \sin(\theta) = \frac{\dy}{\sqrt{\dx^2+\dy^2}}
+\end {align}
+La dérivée première de la sortie plate donne l'orientation du véhicule,
+\begin{align}\label{eq:courbure}
+  \kappa = \frac{\tan (\zeta)}{l} = \frac{\dx\ddy - \dy\ddx}{(\dx^2+\dy^2)^{\frac{3}{2}}}
+\end{align}
+La dérivée seconde via la courbure donne l'angle de braquage.
+
+\subsection* {Mise en oeuvre}
+
+Etant données deux configurations définies par les vecteurs $(x_1,y_1,c\theta_1,s\theta_1,\zeta_1)$ et $(x_2,y_2,c\theta_2,s\theta_2,\zeta_2)$, nous proposons de définir une trajectoire faisable entre ces deux configurations par l'intermédiaire d'un polynome défini sur l'intervalle $[0,1]$ à valeurs dans $\real^2$ et décrivant la trajectoire de la sortie plate du système. Nous notons $P$ ce polyn\^ome. Les relations~(\ref{eq:orientation}) et (\ref{eq:courbure}) induisent des équations non-linéaires sur les coefficients du polyn\^ome $P$. Pour rendre ces équations linéaires, il suffit d'ajouter les contraintes suivantes~:
+\begin{enumerate}
+\item la dérivée première de la sortie plate en 0 et en 1 a pour norme 1,
+\item la dérivée seconde de la sortie plate en 0 (resp. 1) est orthogonale à la dérivée première en 0 (resp. 1).
+\end{enumerate}
+
+\paragraph {Question 1:} écrire les équations sur les cofficients du polyn\^ome $P$ en fonction des configurations initiales et finales $(x_1,y_1,c\theta_1,s\theta_1,\zeta_1)$ et $(x_2,y_2,c\theta_2,s\theta_2,\zeta_2)$.
+
+\paragraph {Question 2:} quel degré de $P$ permet d'avoir autant d'équations que d'inconnues.
+
+\paragraph {Question 3:} résoudre le système d'équation et exprimer les coefficients de $P$ en fonction des configurations initiales et finales.
+\end {document}

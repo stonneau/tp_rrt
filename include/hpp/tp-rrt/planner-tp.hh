@@ -34,10 +34,6 @@ namespace hpp
 namespace tp_rrt
 {
 
-class PlannerTP;
-typedef boost::shared_ptr <PlannerTP> PlannerTPPtr_t;
-typedef boost::weak_ptr <PlannerTP> PlannerTPWkPtr_t;
-
 /// \addtogroup configuration_sampling
 /// \{
 
