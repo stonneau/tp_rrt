@@ -53,37 +53,6 @@ void PlannerTP::oneStep ()
     core::RoadmapPtr_t r (roadmap ());
     // shoot a valid random configuration
     core::ConfigurationPtr_t qrand;
-    do
-    {
-        //SOLUTION
-        qrand = shooter_->shoot();
-    } while (!configValidations->validate (*qrand));
-    // Add qrand as a new node
-    core::NodePtr_t newNode = r->addNode (qrand);
-    // try to connect the random configuration to each connected component
-    // of the roadmap.
-    for (core::ConnectedComponents_t::const_iterator itcc =
-    r->connectedComponents ().begin ();
-    itcc != r->connectedComponents ().end (); ++itcc)
-    {
-        core::ConnectedComponentPtr_t cc = *itcc;
-        // except its own connected component of course
-        if (cc != newNode->connectedComponent ())
-        {
-            double d;
-            // Get nearest node to qrand in connected component
-            core::NodePtr_t nearest = r->nearestNode (qrand, cc, d);
-            core::ConfigurationPtr_t qnear = nearest->configuration ();
-            // Create local path between qnear and qrand
-            core::PathPtr_t localPath = (*sm) (*qnear, *qrand);
-            // validate local path
-            core::PathPtr_t validPart;
-            if (pathValidation->validate (localPath, false, validPart))
-            {
-                // Create node and edges with qrand and the local path
-                r->addEdge (nearest, newNode, localPath);
-                r->addEdge (newNode, nearest, localPath->reverse ());
-            }
-        }
-    }
+
+    std::cout << "TODO: implemnter oneStep!" << std::endl;
 }
