@@ -19,7 +19,8 @@
 #ifndef HPP_TP_RRT_FWD_HH
 # define HPP_TP_RRT_FWD_HH
 
-# include <hpp/util/pointers.hh>
+# include <hpp/util/pointer.hh>
+# include <hpp/core/fwd.hh>
 
 namespace hpp {
   namespace tp_rrt {
@@ -31,6 +32,18 @@ namespace hpp {
     typedef boost::shared_ptr <ShooterTP> ShooterTPPtr_t;
     HPP_PREDEF_CLASS (PlannerTP);
     typedef boost::shared_ptr <PlannerTP> PlannerTPPtr_t;
+    typedef core::value_type value_type;
+    typedef model::Device Device_t;
+    typedef model::DevicePtr_t DevicePtr_t;
+    typedef model::DeviceWkPtr_t DeviceWkPtr_t;
+    typedef model::Configuration_t Configuration_t;
+    typedef model::ConfigurationIn_t ConfigurationIn_t;
+    typedef model::ConfigurationOut_t ConfigurationOut_t;
+    typedef core::ConstraintSet ConstraintSet;
+    typedef core::ConstraintSetPtr_t ConstraintSetPtr_t;
+    typedef core::Path Path;
+    typedef core::PathPtr_t PathPtr_t;
+    typedef core::interval_t interval_t;
   } // tp_rrt
 } // namespace hpp
 #endif // HPP_TP_RRT_FWD_HH

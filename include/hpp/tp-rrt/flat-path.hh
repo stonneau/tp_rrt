@@ -20,7 +20,7 @@
 # define HPP_TP_RRT_FLAT_PATH_HH
 
 # include <hpp/tp-rrt/fwd.hh>
-# include <hpp/tp-rrt/config.hh>
+# include <hpp/model/device.hh>
 # include <hpp/core/path.hh>
 
 namespace hpp {
@@ -45,7 +45,7 @@ namespace hpp {
       /// \param device Robot corresponding to configurations
       /// \param init, end Start and end configurations of the path
       /// \param distanceBetweenAxes Distance between front and rear wheel axes.
-      static FlatPathPtr_t create (const DevicePtr_t& device,
+      static FlatPathPtr_t create (const model::DevicePtr_t& device,
 				   ConfigurationIn_t init,
 				   ConfigurationIn_t end,
 				   value_type distanceBetweenAxes)

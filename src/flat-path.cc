@@ -22,7 +22,7 @@
 #include <hpp/model/joint-configuration.hh>
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/projection-error.hh>
-#include <hpp/tp_rrt/flat-path.hh>
+#include <hpp/tp-rrt/flat-path.hh>
 
 namespace hpp {
   namespace tp_rrt {

@@ -41,12 +41,13 @@ ENDIF()
 
 ADD_DOC_DEPENDENCY("hpp-core >= 3")
 ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 3")
+ADD_REQUIRED_DEPENDENCY("hpp-util")
 
 # Declare Headers
 SET(${PROJECT_NAME}_HEADERS
     include/hpp/tp-rrt/shooter-tp.hh
     include/hpp/tp-rrt/planner-tp.hh
-    include/hpp/tp_rrt/steering-method.hh
+    include/hpp/tp-rrt/steering-method.hh
   )
 
 ADD_SUBDIRECTORY(src)
