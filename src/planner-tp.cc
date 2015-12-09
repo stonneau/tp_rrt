@@ -40,7 +40,7 @@ namespace
 /// will be called iteratively until one goal configuration is accessible
 /// from the initial configuration.
 ///
-/// We will see how to implement a basic PRM algorithm.
+/// We will see how to implement a basic RRT algorithm.
 void PlannerTP::oneStep ()
 {
     // Retrieve the path validation algorithm associated to the problem
@@ -55,7 +55,8 @@ void PlannerTP::oneStep ()
     core::ConfigurationPtr_t qrand;
     do
     {
-        qrand = shooter_->shoot ();
+        //SOLUTION
+        qrand = shooter_->shoot();
     } while (!configValidations->validate (*qrand));
     // Add qrand as a new node
     core::NodePtr_t newNode = r->addNode (qrand);

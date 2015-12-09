@@ -22,15 +22,18 @@ using namespace  hpp::tp_rrt;
 
 namespace
 {
+    typedef std::vector<double> d_vector;
     // Vous devez implémenter cette méthode
     /// Uniformly sample a random value for a joint of the robot
     /// \param min_value: minimum value that can be taken by the current joint
     /// \param max_value: maximum value that can be taken by the current joint
     /// \return the sampled value
-    double sample(double /*min_value*/, double /*max_value*/)
+    double sample(double min_value, double max_value)
     {
-        std::cout << "TODO: implémenter SHOOT !" << std::endl;
-        return 0.;
+        //std::cout << "TODO: implémenter SHOOT !" << std::endl;
+        // SOLUTION
+        return ((double) rand() / (RAND_MAX)) * (max_value-min_value+1) + min_value;
+        //return 0.;
     }
 }
 
@@ -43,12 +46,12 @@ ConfigurationPtr_t ShooterTP::shoot() const
     {
         std::size_t rank = (*itJoint)->rankInConfiguration ();
         const hpp::model::JointConfiguration* jc = (*itJoint)->configuration ();
-        /*if(!jc->isBounded(rank))
+        if(!jc->isBounded(rank))
         {
-            throw std::runtime_error("Joint not bounded. You must bound the joints to sample a joint configuration.");
-        }*/
-//(*config)[rank] = value_type(sample(jc->lowerBound(rank), jc->upperBound(rank)));
-(*itJoint)->configuration ()->uniformlySample (rank, *config);
+         //   throw std::runtime_error("Joint not bounded. You must bound the joints to sample a joint configuration.");
+        }
+        //(*config)[rank] = value_type(sample(jc->lowerBound(rank), jc->upperBound(rank)));
+        (*itJoint)->configuration ()->uniformlySample (rank, *config);
     }
     return config;
 }
