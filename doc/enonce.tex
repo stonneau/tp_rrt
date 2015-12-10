@@ -18,7 +18,7 @@
 
 \author {Florent Lamiraux et Steve Tonneau\\
 CNRS-LAAS, Toulouse, France}
-\title {Tutorial HPP}
+\title {Tutoriel HPP}
 \date {}
 
 \begin {document}
@@ -79,13 +79,13 @@ La dérivée seconde via la courbure donne l'angle de braquage.
 
 \subsection* {Mise en oeuvre}
 
-Etant données deux configurations définies par les vecteurs $(x_1,y_1,c\theta_1,s\theta_1,\zeta_1)$ et $(x_2,y_2,c\theta_2,s\theta_2,\zeta_2)$, nous proposons de définir une trajectoire faisable entre ces deux configurations par l'intermédiaire d'un polynome défini sur l'intervalle $[0,1]$ à valeurs dans $\real^2$ et décrivant la trajectoire de la sortie plate du système. Nous notons $P$ ce polyn\^ome. Les relations~(\ref{eq:orientation}) et (\ref{eq:courbure}) induisent des équations non-linéaires sur les coefficients du polyn\^ome $P$. Pour rendre ces équations linéaires, il suffit d'ajouter les contraintes suivantes~:
+Etant données deux configurations définies par les vecteurs $(x_0,y_0,c\theta_0,s\theta_0,\zeta_0)$ et $(x_1,y_1,c\theta_1,s\theta_1,\zeta_1)$, nous proposons de définir une trajectoire faisable entre ces deux configurations par l'intermédiaire d'un polyn\^ome défini sur l'intervalle $[0,1]$ à valeurs dans $\real^2$ et décrivant la trajectoire de la sortie plate du système. Nous notons $P$ ce polyn\^ome. Les relations~(\ref{eq:orientation}) et (\ref{eq:courbure}) induisent des équations non-linéaires sur les coefficients du polyn\^ome $P$. Pour rendre ces équations linéaires, il suffit d'ajouter les contraintes suivantes~:
 \begin{enumerate}
 \item la dérivée première de la sortie plate en 0 et en 1 a pour norme 1,
 \item la dérivée seconde de la sortie plate en 0 (resp. 1) est orthogonale à la dérivée première en 0 (resp. 1).
 \end{enumerate}
 
-\paragraph {Question 1:} écrire les équations sur les cofficients du polyn\^ome $P$ en fonction des configurations initiales et finales $(x_1,y_1,c\theta_1,s\theta_1,\zeta_1)$ et $(x_2,y_2,c\theta_2,s\theta_2,\zeta_2)$.
+\paragraph {Question 1:} écrire les équations sur les cofficients du polyn\^ome $P$ en fonction des configurations initiales et finales $(x_0,y_0,c\theta_0,s\theta_0,\zeta_0)$ et $(x_1,y_1,c\theta_1,s\theta_1,\zeta_1)$.
 
 \paragraph {Question 2:} quel degré de $P$ permet d'avoir autant d'équations que d'inconnues.
 

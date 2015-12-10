@@ -1,0 +1,74 @@
+\documentclass {article}
+
+\usepackage{amsfonts} % pour les lettres maths creuses \mathbb
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[frenchb]{babel}
+\usepackage{aeguill}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{color}
+
+\newcommand\dx{\dot{x}}
+\newcommand\dy{\dot{y}}
+\newcommand\ddx{\ddot{x}}
+\newcommand\ddy{\ddot{y}}
+\def\real{{\mathbb R}}
+
+\author {Florent Lamiraux et Steve Tonneau\\
+CNRS-LAAS, Toulouse, France}
+\title {Tutoriel HPP~: solutions}
+\date {}
+
+\begin {document}
+\maketitle
+
+\section {Calcul des coefficients de la trajectoire polynomiale de la sortie plate}
+
+On note $P(t) = \sum_{i=0}^{d} t^i P_i$ le polyn\^ome $P$ où
+\begin {itemize}
+\item l'entier $d$ est le degré du polyn\^ome,
+\item les coefficients $P_i$ sont à valeur dans $\real^2$.
+\end {itemize}
+Etant données deux configurations définies par les vecteurs $(x_0,y_0,c\theta_0,s\theta_0,\zeta_0)$ et $(x_1,y_1,c\theta_1,s\theta_1,\zeta_1)$, pour que la courbe $P$ définisse une trajectoire de la voiture entre ces deux configurations, il suffit que~:
+\begin {align}\label{eq:constraints-0}
+  P (0) &= (x_0, y_0) \\
+  \dot {P} (0) &= (\cos (\theta_0), \sin (\theta_0)) \\
+  \ddot {P} (0) &= \kappa_0 (-\sin (\theta_0), \cos (\theta_0)) \\
+  P (1) &= (x_1, y_1) \\
+  \dot {P} (1) &= (\cos (\theta_1), \sin (\theta_1)) \\
+  \label{eq:constraints-1}
+  \ddot {P} (1) &= \kappa_1 (-\sin (\theta_1), \cos (\theta_1))
+\end {align}
+Cela correspond à 12 équations (6 pour chaque coordonnée $x$, $y$) linéaires sur les coefficients de $P$. Rappelons que
+$$
+\kappa_{0} = \frac {\tan \zeta_{0}}{l} \hspace*{1cm} \kappa_{1} = \frac {\tan \zeta_{1}}{l}
+$$
+Le degré $d=5$ devrait permettre de trouver une solution.
+
+Exprimons les dérivées de $P$~:
+\begin {align*}
+P(t) &= P_0 + t P_1 + t^2 P_2 + t^3 P_3 + t^4 P_4 + t^5 P_5 \\
+\dot {P}(t) &= P_1 + 2t P_2 + 3t^2 P_3 + 4t^3 P_4 + 5t^4 P_5 \\
+\ddot {P}(t) &= 2 P_2 + 6t P_3 + 12t^2 P_4 + 20t^3 P_5 \\
+\end {align*}
+Ces expressions, combinées avec les contraintes~(\ref{eq:constraints-0}-\ref{eq:constraints-1}), donnent les équations suivantes sur les coefficients de $P$~:
+\begin {align*}
+P_0 &= (x_0,y_0) \\
+P_0 + P_1 + P_2 + P_3 + P_4 + P_5 &= (x_1,y_1) \\
+P_1 &= (\cos(\theta_0), \sin(\theta_0)) \\
+P_1 + 2 P_2 + 3 P_3 + 4 P_4 + 5 P_5 &= (\cos(\theta_1), \sin(\theta_1))\\
+2 P_2 &= \kappa_0 (-\sin (\theta_0), \cos (\theta_0)) \\
+2 P_2 + 6 P_3 + 12 P_4 + 20 P_5 &= \kappa_1 (-\sin (\theta_1), \cos (\theta_1))
+\end {align*}
+Ce système linéaire admet une solution unique~:
+\begin {align*}
+P_0 &= \left(\begin{array}{c}x_0\\y_0\end{array}\right) \\
+P_1 &= \left(\begin{array}{c}\cos(\theta_0)\\ \sin(\theta_0)\end{array}\right) \\
+P_2 &= \frac{\kappa_0}{2} \left(\begin{array}{c}-\sin (\theta_0)\\ \cos (\theta_0)\end{array}\right) \\
+P_3 &= 10 \left(\begin{array}{c}x_1-x_0\\y_1-y_0\end{array}\right) -6 \left(\begin{array}{c}\cos(\theta_0)\\\sin(\theta_0)\end{array}\right) -4 \left(\begin{array}{c}\cos(\theta_1)\\\sin(\theta_1)\end{array}\right) -\frac{3}{2} \kappa_0\left(\begin{array}{c}-\sin(\theta_0)\\\cos(\theta_0)\end{array}\right) + \frac {1}{2}\kappa_1\left(\begin{array}{c}-\sin(\theta_1)\\\cos(\theta_1)\end{array}\right)\\
+P_4 &= -15 \left(\begin{array}{c}x_1-x_0\\y_1-y_0\end{array}\right) +8 \left(\begin{array}{c}\cos(\theta_0)\\\sin(\theta_0)\end{array}\right) +7 \left(\begin{array}{c}\cos(\theta_1)\\\sin(\theta_1)\end{array}\right) +\frac{3}{2} \kappa_0\left(\begin{array}{c}-\sin(\theta_0)\\\cos(\theta_0)\end{array}\right)  - \kappa_1\left(\begin{array}{c}-\sin(\theta_1)\\\cos(\theta_1)\end{array}\right)\\
+P_5 &= 6 \left(\begin{array}{c}x_1-x_0\\y_1-y_0\end{array}\right) -3 \left(\begin{array}{c}\cos(\theta_0)\\\sin(\theta_0)\end{array}\right) -3 \left(\begin{array}{c}\cos(\theta_1)\\\sin(\theta_1)\end{array}\right) -\frac{1}{2} \kappa_0\left(\begin{array}{c}-\sin(\theta_0)\\\cos(\theta_0)\end{array}\right) + \frac {1}{2}\kappa_1\left(\begin{array}{c}-\sin(\theta_1)\\\cos(\theta_1)\end{array}\right)
+\end {align*}
+\end {document}
