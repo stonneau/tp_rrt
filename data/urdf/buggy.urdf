@@ -16,4 +16,10 @@
       </geometry>
     </collision>
   </link>
+  <joint name="steering angle" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit lower="-1" upper="1"/>
+    <origin xyz="1.36 0 0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+  </joint>
 </robot>
