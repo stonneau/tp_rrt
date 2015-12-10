@@ -53,11 +53,13 @@ void PlannerTP::oneStep ()
     core::RoadmapPtr_t r (roadmap ());
     // shoot a valid random configuration
     core::ConfigurationPtr_t qrand;
+    // Unused yet necessary pointer to report
+    ValidationReportPtr_t report;
     do
     {
         //SOLUTION
         qrand = shooter_->shoot();
-    } while (!configValidations->validate (*qrand));
+    } while (!configValidations->validate (*qrand, report));
     // Add qrand as a new node
     core::NodePtr_t newNode = r->addNode (qrand);
     // try to connect the random configuration to each connected component
@@ -78,7 +80,9 @@ void PlannerTP::oneStep ()
             core::PathPtr_t localPath = (*sm) (*qnear, *qrand);
             // validate local path
             core::PathPtr_t validPart;
-            if (pathValidation->validate (localPath, false, validPart))
+	    // Unused yet necessary pointer to report
+	    PathValidationReportPtr_t report;
+            if (pathValidation->validate (localPath, false, validPart, report))
             {
                 // Create node and edges with qrand and the local path
                 r->addEdge (nearest, newNode, localPath);
