@@ -192,9 +192,13 @@ namespace hpp {
 				 value_type param) const;
 
     private:
+      void computeCoefficients ();
       DevicePtr_t device_;
       Configuration_t initial_;
       Configuration_t end_;
+      value_type distanceBetweenAxes_;
+      /// Coefficients of the polynomial flat output
+      std::vector <vector2_t> P_;
       FlatPathWkPtr_t weak_;
     }; // class FlatPath
   } //   namespace tp_rrt

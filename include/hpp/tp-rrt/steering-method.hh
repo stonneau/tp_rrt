@@ -22,6 +22,7 @@
 # include <hpp/model/joint.hh>
 # include <hpp/core/steering-method.hh>
 # include <hpp/tp-hpp/flat-path.hh>
+# include <hpp/util/debug.hh>
 
 namespace hpp {
   namespace tp_rrt {
@@ -113,7 +114,12 @@ namespace hpp {
 	  throw std::runtime_error ("Steering angle joint should be of type "
 				    "model::jointRotation::Unbounded");
 	}
-	
+	const Transform3f& frontWheel (steeringAngle->positionInParentFrame ());
+	const vector3_t& frontWheelPosition (frontWheel.getTranslation ());
+	value_type y = frontWheelPosition [1];
+	value_type z = frontWheelPosition [2];
+	distanceBetweenAxes_ = sqrt (y*y + z*z);
+	hppDout (info, "distanceBetweenAxes_ = " << distanceBetweenAxes_);
       }
 
       DeviceWkPtr_t device_;

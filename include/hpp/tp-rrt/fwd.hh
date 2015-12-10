@@ -44,6 +44,10 @@ namespace hpp {
     typedef core::Path Path;
     typedef core::PathPtr_t PathPtr_t;
     typedef core::interval_t interval_t;
+
+    typedef Eigen::Matrix <value_type, 2, 1> vector2_t;
+    typedef model::vector3_t Vector3_t;
+    typedef model::Transform3f Transform3f;
   } // tp_rrt
 } // namespace hpp
 #endif // HPP_TP_RRT_FWD_HH
