@@ -27,7 +27,8 @@ ConfigurationPtr_t ShooterTP::shoot() const
     for (JointVector_t::const_iterator itJoint = jv.begin ();
      itJoint != jv.end (); itJoint++)
     {
-        std::size_t rank = (*itJoint)->rankInConfiguration ();        
+        std::size_t rank = (*itJoint)->rankInConfiguration ();
+        (*itJoint)->configuration ()->uniformlySample (rank, *config);
         //std::cout << "TODO: implémenter SHOOT !" << std::endl;
     }
     return config;

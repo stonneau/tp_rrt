@@ -39,11 +39,18 @@ namespace hpp {
     typedef model::Configuration_t Configuration_t;
     typedef model::ConfigurationIn_t ConfigurationIn_t;
     typedef model::ConfigurationOut_t ConfigurationOut_t;
+    typedef model::ConfigurationPtr_t ConfigurationPtr_t;
     typedef core::ConstraintSet ConstraintSet;
     typedef core::ConstraintSetPtr_t ConstraintSetPtr_t;
     typedef core::Path Path;
     typedef core::PathPtr_t PathPtr_t;
+    typedef core::NodePtr_t NodePtr_t;
     typedef core::interval_t interval_t;
+    typedef core::Node Node;
+    typedef std::list <Node*> Nodes_t;
+    typedef Node* NodePtr_t;
+    typedef core::CollisionValidation CollisionValidation;
+    typedef core::CollisionValidationPtr_t CollisionValidationPtr_t;
   } // tp_rrt
 } // namespace hpp
 #endif // HPP_TP_RRT_FWD_HH
