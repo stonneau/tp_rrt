@@ -32,21 +32,23 @@ namespace hpp {
     typedef boost::shared_ptr <ShooterTP> ShooterTPPtr_t;
     HPP_PREDEF_CLASS (PlannerTP);
     typedef boost::shared_ptr <PlannerTP> PlannerTPPtr_t;
-    typedef core::value_type value_type;
-    typedef model::Device Device_t;
-    typedef model::DevicePtr_t DevicePtr_t;
-    typedef model::DeviceWkPtr_t DeviceWkPtr_t;
     typedef model::Configuration_t Configuration_t;
     typedef model::ConfigurationIn_t ConfigurationIn_t;
     typedef model::ConfigurationOut_t ConfigurationOut_t;
+    typedef model::Device Device_t;
+    typedef model::DevicePtr_t DevicePtr_t;
+    typedef model::DeviceWkPtr_t DeviceWkPtr_t;
+    typedef model::JointPtr_t JointPtr_t;
+
     typedef core::ConstraintSet ConstraintSet;
     typedef core::ConstraintSetPtr_t ConstraintSetPtr_t;
     typedef core::Path Path;
     typedef core::PathPtr_t PathPtr_t;
     typedef core::interval_t interval_t;
+    typedef core::value_type value_type;
 
     typedef Eigen::Matrix <value_type, 2, 1> vector2_t;
-    typedef model::vector3_t Vector3_t;
+    typedef model::vector3_t vector3_t;
     typedef model::Transform3f Transform3f;
   } // tp_rrt
 } // namespace hpp

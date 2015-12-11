@@ -21,8 +21,10 @@
 
 # include <hpp/model/joint.hh>
 # include <hpp/core/steering-method.hh>
-# include <hpp/tp-hpp/flat-path.hh>
+# include <hpp/tp-rrt/config.hh>
+# include <hpp/tp-rrt/flat-path.hh>
 # include <hpp/util/debug.hh>
+# include <hpp/util/pointer.hh>
 
 namespace hpp {
   namespace tp_rrt {
@@ -31,7 +33,7 @@ namespace hpp {
 
     /// Steering method that creates FlatPath instances
     ///
-    class HPP_TP_RRT_DLLAPI SteeringMethod : public core::SteeringMethod
+    class TP_RRT_DLLAPI SteeringMethod : public core::SteeringMethod
     {
     public:
       /// Create instance and return shared pointer
@@ -52,7 +54,7 @@ namespace hpp {
 	return shPtr;
       }
       /// Copy instance and return shared pointer
-      virtual SteeringMethodPtr_t copy () const
+      virtual core::SteeringMethodPtr_t copy () const
       {
 	return createCopy (weak_.lock ());
       }
@@ -61,38 +63,38 @@ namespace hpp {
       virtual PathPtr_t impl_compute (ConfigurationIn_t q1,
 				      ConfigurationIn_t q2) const
       {
-        PathPtr_t path = FlatPath::create (device_.lock (), q1, q2,
+	PathPtr_t path = FlatPath::create (device_.lock (), q1, q2,
 					   distanceBetweenAxes_,
 					   constraints ());
-        return path;
+	return path;
       }
     protected:
       /// Constructor with robot
       /// Weighed distance is created from robot
       SteeringMethod (const DevicePtr_t& device) :
 	core::SteeringMethod (), device_ (device), weak_ ()
-      {
-	computeDistanceBetweenAxes ();
-      }
+	{
+	  computeDistanceBetweenAxes ();
+	}
       /// Copy constructor
       SteeringMethod (const SteeringMethod& other) :
-	core::SteeringMethod (other), device_ (other.device_), 
+	core::SteeringMethod (other), device_ (other.device_),
 	distanceBetweenAxes_ (other.distanceBetweenAxes_), weak_ ()
-      {
-      }
+	{
+	}
 
       /// Store weak pointer to itself
       void init (SteeringMethodWkPtr_t weak)
       {
-	SteeringMethod::init (weak);
+        core::SteeringMethod::init (weak);
 	weak_ = weak;
       }
     private:
       void computeDistanceBetweenAxes ()
       {
-	JointPtr_t root (device_->rootJoint ());
-	// Test that kinematic chain is as expected
-	if (!HPP_DYNAMIC_PTR_CAST (model::JointTranslation <2>, root)) {
+        JointPtr_t root (device_.lock ()->rootJoint ());
+        // Test that kinematic chain is as expected
+        if (!dynamic_cast <model::JointTranslation <2>* > (root)) {
 	  throw std::runtime_error ("root joint should be of type "
 				    "model::JointTranslation <2>");
 	}
@@ -100,8 +102,7 @@ namespace hpp {
 	  throw std::runtime_error ("Root joint should have one child");
 	}
 	JointPtr_t orientation (root->childJoint (0));
-	if (!HPP_DYNAMIC_PTR_CAST (model::jointRotation::Unbounded,
-				   orientation)) {
+	if (!dynamic_cast <model::jointRotation::UnBounded*> (orientation)) {
 	  throw std::runtime_error ("second joint should be of type "
 				    "model::jointRotation::Unbounded");
 	}
@@ -109,8 +110,7 @@ namespace hpp {
 	  throw std::runtime_error ("Orientation joint should have one child");
 	}
 	JointPtr_t steeringAngle (orientation->childJoint (0));
-	if (!HPP_DYNAMIC_PTR_CAST (model::jointRotation::Bounded,
-				   steeringAngle)) {
+        if (!dynamic_cast <model::jointRotation::Bounded*> (steeringAngle)) {
 	  throw std::runtime_error ("Steering angle joint should be of type "
 				    "model::jointRotation::Unbounded");
 	}

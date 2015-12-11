@@ -19,6 +19,7 @@
 #ifndef HPP_TP_RRT_FLAT_PATH_HH
 # define HPP_TP_RRT_FLAT_PATH_HH
 
+# include <hpp/tp-rrt/config.hh>
 # include <hpp/tp-rrt/fwd.hh>
 # include <hpp/model/device.hh>
 # include <hpp/core/path.hh>
@@ -34,7 +35,7 @@ namespace hpp {
     ///       joints, and translation part of freeflyer joints,
     ///   \li angular interpolation for unbounded rotation joints,
     ///   \li constant angular velocity for SO(3) part of freeflyer joints.
-    class HPP_CORE_DLLAPI FlatPath : public core::Path
+    class TP_RRT_DLLAPI FlatPath : public core::Path
     {
     public:
       typedef core::Path parent_t;

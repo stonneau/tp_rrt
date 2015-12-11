@@ -17,6 +17,7 @@
 // <http://www.gnu.org/licenses/>.
 
 #include <hpp/tp-rrt/planner-tp.hh>
+#include <hpp/tp-rrt/steering-method.hh>
 #include <hpp/core/problem-solver.hh>
 #include <hpp/corbaserver/server.hh>
 
@@ -31,6 +32,9 @@ int main (int argc, const char* argv[])
   // Add the new planner type in order to be able to select it from python
   // client.
   problemSolver->addPathPlannerType ("PlannerTP", hpp::tp_rrt::PlannerTP::create);
+  // Add new steering method in factory
+  problemSolver->addSteeringMethodType ("FlatCar",
+					hpp::tp_rrt::SteeringMethod::create);
   // Create the CORBA server.
   hpp::corbaServer::Server server (problemSolver, argc, argv, true);
   // Start the CORBA server.

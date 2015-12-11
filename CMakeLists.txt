@@ -20,6 +20,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 SET(CXX_DISABLE_WERROR TRUE)
+SET(CUSTOM_HEADER_DIR "hpp/tp-rrt")
+
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/python.cmake)
 

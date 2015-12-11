@@ -31,21 +31,29 @@ namespace hpp {
     {
       // Position of initial configuration (x0,y0)
       vector2_t M0 (initial_.segment <2> (0));
+      hppDout (info, "M0=" << M0.transpose ());
       // orientation of initial configuration (x0,y0)
       vector2_t u0 (initial_.segment <2> (2));
+      hppDout (info, "u0=" << u0.transpose ());
       // curvature relative to initial configuration
       value_type kappa0 (tan (initial_ [4])/distanceBetweenAxes_);
+      hppDout (info, "kappa0=" << kappa0);
       // normal acceleration
-      vector2_t v0; v0 [0] = -kappa0 * u0 [1]; v0 [1] = -kappa0 * u0 [0];
+      vector2_t v0; v0 [0] = -kappa0 * u0 [1]; v0 [1] = kappa0 * u0 [0];
+      hppDout (info, "v0=" << v0.transpose ());
 
       // Position of initial configuration (x0,y0)
       vector2_t M1 (end_.segment <2> (0));
+      hppDout (info, "M1=" << M1.transpose ());
       // orientation of initial configuration (x0,y0)
       vector2_t u1 (end_.segment <2> (2));
+      hppDout (info, "u1=" << u1.transpose ());
       // curvature relative to initial configuration
       value_type kappa1 (tan (end_ [4])/distanceBetweenAxes_);
+      hppDout (info, "kappa1=" << kappa1);
       // normal acceleration
-      vector2_t v1; v1 [0] = -kappa1 * u1 [1]; v1 [1] = -kappa1 * u1 [0];
+      vector2_t v1; v1 [0] = -kappa1 * u1 [1]; v1 [1] = kappa1 * u1 [0];
+      hppDout (info, "v1=" << v1.transpose ());
 
       P_ [0] = M0;
       P_ [1] = u0;
@@ -53,6 +61,12 @@ namespace hpp {
       P_ [3] = 10*(M1-M0) - 6*u0 - 4*u1 - 1.5*v0 + .5*v1;
       P_ [4] = -15*(M1-M0) + 8*u0 + 7*u1 + 1.5*v0 - v1;
       P_ [5] = 6*(M1-M0) - 3*u0 - 3*u1 - .5*v0 + .5*v1;
+      hppDout (info, "P_ [0]=" << P_ [0].transpose ());
+      hppDout (info, "P_ [1]=" << P_ [1].transpose ());
+      hppDout (info, "P_ [2]=" << P_ [2].transpose ());
+      hppDout (info, "P_ [3]=" << P_ [3].transpose ());
+      hppDout (info, "P_ [4]=" << P_ [4].transpose ());
+      hppDout (info, "P_ [5]=" << P_ [5].transpose ());
     }
 
     FlatPath::FlatPath (const DevicePtr_t& device,
@@ -75,7 +89,7 @@ namespace hpp {
 			ConfigurationIn_t end,
 			value_type distanceBetweenAxes,
 			ConstraintSetPtr_t constraints) :
-      parent_t (interval_t (0, distanceBetweenAxes), device->configSize (),
+      parent_t (interval_t (0, 1.), device->configSize (),
 		device->numberDof (), constraints),
       device_ (device), initial_ (init), end_ (end),
       distanceBetweenAxes_ (distanceBetweenAxes), P_ (6)
