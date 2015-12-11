@@ -15,79 +15,193 @@
 // hpp-rbprm. If not, see <http://www.gnu.org/licenses/>.
 
 #include <hpp/tp-rrt/planner-tp.hh>
+#include <hpp/core/path-validation-report.hh>
 
 using namespace  hpp::core;
 using namespace  hpp::tp_rrt;
 
-namespace
+
+bool belongs (const ConfigurationPtr_t& q, const Nodes_t& nodes)
 {
-    // Vous devez implémenter cette méthode
-    /// Uniformly sample a random value for a joint of the robot
-    /// \param min_value: minimum value that can be taken by the current joint
-    /// \param max_value: maximum value that can be taken by the current joint
-    /// \return the sampled value
-    double sample(double /*min_value*/, double /*max_value*/)
+    for (Nodes_t::const_iterator itNode = nodes.begin ();
+    itNode != nodes.end (); ++itNode)
     {
-        std::cout << "TODO: implémenter SHOOT !" << std::endl;
-        return 0.;
+        if (*((*itNode)->configuration ()) == *q) return true;
+    }
+    return false;
+}
+
+/// Compute the largest valid interval starting from the path beginning
+///
+/// \param path the path to check for validity,
+/// \param reverse if true check from the end,
+/// \retval validPart the extracted valid part of the path,
+///         pointer to path if path is valid.
+/// \retval validationReport information about the validation process:
+///         which objects have been detected in collision and at which
+///         parameter along the path.
+/// \param collisionValidation object used to perform collision detection
+/// \return whether the whole path is valid.
+bool validate (const PathPtr_t& path,
+           PathPtr_t& validPart,
+           PathValidationReportPtr_t& report, CollisionValidationPtr_t collisionValidation)
+{
+    std::cout << "1" <<  std::endl;
+    value_type tmin = path->timeRange ().first;
+    value_type tmax = path->timeRange ().second;
+    value_type lastValidTime = tmin;
+    value_type t = tmin;
+    value_type stepSize_ = 0.1;
+    bool valid = true;
+    unsigned finished = 0;
+    while (finished < 2 && valid)
+    {
+        Configuration_t q = (*path) (t);
+        std::cout << "1.5" <<  std::endl;
+        if (!collisionValidation->validate (q))
+        {
+            std::cout << "1.75" <<  std::endl;
+            std::cout << report <<  std::endl;
+            report->parameter = t;
+            valid = false;
+            std::cout << "2" <<  std::endl;
+        }
+        else
+        {
+            std::cout << "3" <<  std::endl;
+            lastValidTime = t;
+            t += stepSize_;
+        }
+        if (t > tmax)
+        {
+            t = tmax;
+            finished ++;
+        }
+    }
+    if (valid)
+    {
+        std::cout << "4" <<  std::endl;
+        validPart = path;
+        return true;
+    }
+    else
+    {
+        std::cout << "5" <<  std::endl;
+        validPart = path->extract (std::make_pair (tmin, lastValidTime));
+        return false;
     }
 }
 
 // Vous devez implémenter cette méthode
 /// One step of extension.
 ///
-/// This method implements one step of your algorithm. The method
+/// This method implements one step of your RRT algorithm. The method
 /// will be called iteratively until one goal configuration is accessible
 /// from the initial configuration.
-///
-/// We will see how to implement a basic RRT algorithm.
 void PlannerTP::oneStep ()
 {
-    // Retrieve the path validation algorithm associated to the problem
-    core::PathValidationPtr_t pathValidation (problem ().pathValidation ());
-    // Retrieve configuration validation methods associated to the problem
-    core::ConfigValidationsPtr_t configValidations (problem ().configValidations ());
-    // Retrieve the steering method
-    core::SteeringMethodPtr_t sm (problem ().steeringMethod ());
     // Retrieve roadmap of the path planner
     core::RoadmapPtr_t r (roadmap ());
+    // Temporary storing of the new edges
+    // that can't be added ruding the iteration on connex components
+    DelayedEdges_t delayedEdges;
+    Nodes_t newNodes;
+
     // shoot a valid random configuration
-    core::ConfigurationPtr_t qrand;
-    // Unused yet necessary pointer to report
-    ValidationReportPtr_t report;
-    do
+    // and iterate over connected component to
+    // try to connect it
+    ConfigurationPtr_t qrand = shooter_->shoot();
+    for(ConnectedComponents_t::const_iterator cit = r->connectedComponents().begin();
+        cit != r->connectedComponents().end(); ++cit)
     {
-        //SOLUTION
-        qrand = shooter_->shoot();
-    } while (!configValidations->validate (*qrand, report));
-    // Add qrand as a new node
-    core::NodePtr_t newNode = r->addNode (qrand);
-    // try to connect the random configuration to each connected component
-    // of the roadmap.
-    for (core::ConnectedComponents_t::const_iterator itcc =
-    r->connectedComponents ().begin ();
-    itcc != r->connectedComponents ().end (); ++itcc)
+        const ConnectedComponentPtr_t cc = *cit;
+        double distance;
+        extend(r->nearestNode(qrand, cc, distance), qrand, delayedEdges, newNodes);
+    }
+
+    // Insert new nodes,
+    // and delayed edges into the roadmap
+    // Add edges in both directions
+    // using the method extract of a Path
+    for (DelayedEdges_t::const_iterator itEdge = delayedEdges.begin ();
+         itEdge != delayedEdges.end (); ++itEdge)
     {
-        core::ConnectedComponentPtr_t cc = *itcc;
-        // except its own connected component of course
-        if (cc != newNode->connectedComponent ())
+        const NodePtr_t& near = itEdge-> get <0> ();
+        const ConfigurationPtr_t& q_new = itEdge-> get <1> ();
+        const PathPtr_t& validPath = itEdge-> get <2> ();
+        NodePtr_t newNode = roadmap ()->addNode (q_new);
+        roadmap ()->addEdge (near, newNode, validPath);
+        interval_t timeRange = validPath->timeRange ();
+        roadmap ()->addEdge (newNode, near, validPath->extract
+                   (interval_t (timeRange.second ,
+                        timeRange.first)));
+    }
+
+    //
+    // Second, try to connect new nodes together
+    //
+    PathPtr_t path, validPath;
+    core::PathValidationPtr_t pathValidation (problem ().pathValidation ());
+    core::SteeringMethodPtr_t sm (problem ().steeringMethod ());
+    for (Nodes_t::const_iterator itn1 = newNodes.begin ();
+     itn1 != newNodes.end (); ++itn1)
+    {
+        for (Nodes_t::const_iterator itn2 = boost::next (itn1);
+           itn2 != newNodes.end (); ++itn2)
         {
-            double d;
-            // Get nearest node to qrand in connected component
-            core::NodePtr_t nearest = r->nearestNode (qrand, cc, d);
-            core::ConfigurationPtr_t qnear = nearest->configuration ();
-            // Create local path between qnear and qrand
-            core::PathPtr_t localPath = (*sm) (*qnear, *qrand);
-            // validate local path
-            core::PathPtr_t validPart;
-	    // Unused yet necessary pointer to report
-	    PathValidationReportPtr_t report;
-            if (pathValidation->validate (localPath, false, validPart, report))
+            ConfigurationPtr_t q1 ((*itn1)->configuration ());
+            ConfigurationPtr_t q2 ((*itn2)->configuration ());
+            assert (*q1 != *q2);
+            path = (*sm) (*q1, *q2);
+            PathValidationReportPtr_t report;
+          /*  if (path && pathValidation->validate
+                    (path, false, validPath, report))*/
+            if(path && validate(path,validPath,report, collisionValidation_))
             {
-                // Create node and edges with qrand and the local path
-                r->addEdge (nearest, newNode, localPath);
-                r->addEdge (newNode, nearest, localPath->reverse ());
+                roadmap ()->addEdge (*itn1, *itn2, path);
+                interval_t timeRange = path->timeRange ();
+                roadmap ()->addEdge (*itn2, *itn1, path->extract
+                       (interval_t (timeRange.second,
+                                timeRange.first)));
             }
         }
     }
 }
+
+PathPtr_t PlannerTP::extend (const NodePtr_t nearest, const ConfigurationPtr_t& target,
+                             DelayedEdges_t& delayedEdges, Nodes_t& newNodes)
+{
+    PathPtr_t path, validPath;
+    // Retrieve the path validation algorithm associated to the problem
+    core::PathValidationPtr_t pathValidation (problem ().pathValidation ());
+    // Retrieve the steering method and use it to compute
+    // a path between the two configurations
+    core::SteeringMethodPtr_t sm (problem ().steeringMethod ());
+    path = (*sm) (*(nearest->configuration ()), *target);
+    if (path)
+    {
+        // If a path is defined
+        // try to validate it
+        PathValidationReportPtr_t report;
+        bool pathValid = pathValidation->validate (path, false, validPath, report);
+        // If the path is only partially validated
+        // Insert the end of the valid path q_near to the set of newNodes
+        // and add path to q_near in the roadmap
+        // else add the new edge
+        value_type t_final = validPath->timeRange ().second;
+        if (t_final != path->timeRange ().first)
+        {
+            ConfigurationPtr_t q_new (new Configuration_t (validPath->end ()));
+            if (!pathValid || !belongs (q_new, newNodes))
+            {
+                newNodes.push_back (roadmap ()->addNodeAndEdges(nearest, q_new, validPath));
+            }
+            else
+            {
+                delayedEdges.push_back (DelayedEdge_t (nearest, q_new, validPath));
+            }
+        }
+    }
+    return validPath;
+}
+

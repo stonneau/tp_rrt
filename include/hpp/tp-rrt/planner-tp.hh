@@ -26,8 +26,10 @@
 #include <hpp/core/path-validation.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/problem.hh>
+#include <hpp/core/collision-validation.hh>
 
 #include <hpp/tp-rrt/shooter-tp.hh>
+#include <boost/tuple/tuple.hpp>
 
 namespace hpp
 {
@@ -40,6 +42,9 @@ namespace tp_rrt
 /// Uniformly sample with bounds of degrees of freedom.
 class PlannerTP : public core::PathPlanner
 {
+    typedef boost::tuple <NodePtr_t, ConfigurationPtr_t, PathPtr_t> DelayedEdge_t;
+    typedef std::vector <DelayedEdge_t> DelayedEdges_t;
+
     public:
     /// Create an instance and return a shared pointer to the instance
     static PlannerTPPtr_t create (const core::Problem& problem,
@@ -58,12 +63,27 @@ class PlannerTP : public core::PathPlanner
     /// from the initial configuration.
     virtual void oneStep ();
 
+    /// Tries to extend the graph towards a configuration
+    ///
+    /// \param target a randomly generated configuration
+    /// \return whether the heuristic has been added. False is returned if a heuristic with that name already exists.
+    PathPtr_t extend (const NodePtr_t nearest, const ConfigurationPtr_t& target,
+                                 DelayedEdges_t& delayedEdges, Nodes_t& newNodes);
+
     protected:
     /// Protected constructor
     /// Users need to call Planner::create in order to create instances.
     PlannerTP (const core::Problem& problem, const core::RoadmapPtr_t& roadmap)
         : core::PathPlanner (problem, roadmap)
-        , shooter_ (tp_rrt::ShooterTP::create (problem.robot ())) {}
+        , shooter_ (tp_rrt::ShooterTP::create (problem.robot ()))
+        , collisionValidation_(CollisionValidation::create(problem.robot()))
+    {
+        for(core::ObjectVector_t::const_iterator cit = problem.collisionObstacles().begin();
+            cit != problem.collisionObstacles().end(); ++cit)
+        {
+            collisionValidation_->addObstacle(*cit);
+        }
+    }
 
     /// Store weak pointer to itself
     void init (const PlannerTPWkPtr_t& weak)
@@ -76,6 +96,7 @@ class PlannerTP : public core::PathPlanner
     ShooterTPPtr_t shooter_;
     /// weak pointer to itself
     PlannerTPWkPtr_t weakPtr_;
+    core::CollisionValidationPtr_t collisionValidation_;
 }; // class PlannerTP
 /// \}
 } //   namespace tp_rrt
