@@ -86,10 +86,10 @@ Le mouvement final peut se jouer de mani\`ere assez lente en raison de la machin
 
 \subsection{D\'efinition d'un nouveau probl\`eme en python}
 A partir du script du tutoriel 1, nous allons d\'efinir un nouveau probl\`eme.
-Pour cel\`a il faut d'abord r\'ecup\'erer les donn\'ees du nouveau tp.
+Pour cela il faut d'abord r\'ecup\'erer les donn\'ees du nouveau tp.
 \begin{lstlisting}[language=bash]
   $ cd ~/dev/hpp/src/tp_hpp_xxx
-  $ git clone --recursive TODO
+  $ git clone --recursive https://github.com/laastp/hpp_aip.git
 \end{lstlisting}
 %$
 Ensuite, compiler le projet avec cmake
@@ -162,12 +162,12 @@ Tester l'algorithme d'optimisation $RandomShortcut$ avec votre planner, et v\'er
 
 \paragraph {Question 7:}
 Biaiser la m\'ethode d'\'echantillonnage pour qu'une fois sur dix, elle retourne la configuration d'arriv\'ee.
-Cel\`a a t'il une influence sur le temps de calcul? Le chemin trouv\'e?
+Cela a t'il une influence sur le temps de calcul? Le chemin trouv\'e?
 Pourquoi?
 
 \paragraph{Question 8:}
 Impl\'ementer votre propre m\'ethode de validation de chemin, en utilisant une m\'ethode it\'erative
-vue en cours. Pour simplifier le travail, une free function $validate$ a \'e\'e d\'efinie dans planner-tp.cc.
+vue en cours. Pour simplifier le travail, une free function $validate$ a été d\'efinie dans planner-tp.cc.
 Il vous faut la compl\'eter, puis modifier votre planner pour appeler cette m\'ethode.
 
 \paragraph{Question 9:}
