@@ -46,29 +46,25 @@ bool validate (const PathPtr_t& path,
            PathPtr_t& validPart,
            PathValidationReportPtr_t& report, CollisionValidationPtr_t collisionValidation)
 {
-    std::cout << "1" <<  std::endl;
     value_type tmin = path->timeRange ().first;
     value_type tmax = path->timeRange ().second;
     value_type lastValidTime = tmin;
     value_type t = tmin;
     value_type stepSize_ = 0.1;
     bool valid = true;
+    bool success;
+    ValidationReportPtr_t cReport(new CollisionValidationReport);
     unsigned finished = 0;
     while (finished < 2 && valid)
     {
-        Configuration_t q = (*path) (t);
-        std::cout << "1.5" <<  std::endl;
-        if (!collisionValidation->validate (q))
+        Configuration_t q = (*path) (t, success);
+        if (!collisionValidation->validate (q, cReport))
         {
-            std::cout << "1.75" <<  std::endl;
-            std::cout << report <<  std::endl;
             report->parameter = t;
             valid = false;
-            std::cout << "2" <<  std::endl;
         }
         else
         {
-            std::cout << "3" <<  std::endl;
             lastValidTime = t;
             t += stepSize_;
         }
@@ -80,13 +76,11 @@ bool validate (const PathPtr_t& path,
     }
     if (valid)
     {
-        std::cout << "4" <<  std::endl;
         validPart = path;
         return true;
     }
     else
     {
-        std::cout << "5" <<  std::endl;
         validPart = path->extract (std::make_pair (tmin, lastValidTime));
         return false;
     }
@@ -153,7 +147,7 @@ void PlannerTP::oneStep ()
             ConfigurationPtr_t q2 ((*itn2)->configuration ());
             assert (*q1 != *q2);
             path = (*sm) (*q1, *q2);
-            PathValidationReportPtr_t report;
+            PathValidationReportPtr_t report(new PathValidationReport);
           /*  if (path && pathValidation->validate
                     (path, false, validPath, report))*/
             if(path && validate(path,validPath,report, collisionValidation_))

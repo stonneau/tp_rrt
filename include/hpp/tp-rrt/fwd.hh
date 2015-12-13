@@ -44,13 +44,15 @@ namespace hpp {
     typedef core::ConstraintSetPtr_t ConstraintSetPtr_t;
     typedef core::Path Path;
     typedef core::PathPtr_t PathPtr_t;
-     typedef core::Node Node;
+    typedef core::Node Node;
     typedef std::list <Node*> Nodes_t;
     typedef Node* NodePtr_t;
     typedef core::CollisionValidation CollisionValidation;
     typedef core::CollisionValidationPtr_t CollisionValidationPtr_t;
     typedef core::interval_t interval_t;
     typedef core::value_type value_type;
+    typedef core::Joint Joint;
+    typedef core::JointPtr_t JointPtr_t;
 
     typedef Eigen::Matrix <value_type, 2, 1> vector2_t;
     typedef model::vector3_t vector3_t;

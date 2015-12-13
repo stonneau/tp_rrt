@@ -47,6 +47,7 @@ ADD_REQUIRED_DEPENDENCY("hpp-util")
 
 # Declare Headers
 SET(${PROJECT_NAME}_HEADERS
+    include/hpp/tp-rrt/fwd.hh
     include/hpp/tp-rrt/shooter-tp.hh
     include/hpp/tp-rrt/planner-tp.hh
     include/hpp/tp-rrt/steering-method.hh

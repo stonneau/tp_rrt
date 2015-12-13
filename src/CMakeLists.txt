@@ -24,6 +24,7 @@ ADD_EXECUTABLE (hpp-tp-rrt
   planner-tp.cc ${PROJECT_SOURCE_DIR}/include/hpp/tp-rrt/planner-tp.hh
   flat-path.cc ${PROJECT_SOURCE_DIR}/include/hpp/tp-rrt/flat-path.hh
   ${PROJECT_SOURCE_DIR}/include/hpp/tp-rrt/steering-method.hh
+  ${PROJECT_SOURCE_DIR}/include/hpp/tp-rrt/fwd.hh
   main.cc
 )
 # Link executable with hpp-corbaserver library

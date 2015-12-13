@@ -29,7 +29,6 @@ ConfigurationPtr_t ShooterTP::shoot() const
     {
         std::size_t rank = (*itJoint)->rankInConfiguration ();
         (*itJoint)->configuration ()->uniformlySample (rank, *config);
-        //std::cout << "TODO: implémenter SHOOT !" << std::endl;
     }
     return config;
 }
