@@ -21,11 +21,47 @@
 #include <hpp/model/joint.hh>
 #include <hpp/model/joint-configuration.hh>
 #include <hpp/core/config-projector.hh>
+#include <hpp/core/discretized-path-validation.hh>
+#include <hpp/core/joint-bound-validation.hh>
 #include <hpp/core/projection-error.hh>
 #include <hpp/tp-rrt/flat-path.hh>
 
 namespace hpp {
   namespace tp_rrt {
+
+    FlatPathPtr_t FlatPath::create (const model::DevicePtr_t& device,
+				    ConfigurationIn_t init,
+				    ConfigurationIn_t end,
+				    value_type distanceBetweenAxes)
+    {
+      FlatPath* ptr = new FlatPath (device, init, end, distanceBetweenAxes);
+      FlatPathPtr_t shPtr (ptr);
+      try {
+	ptr->init (shPtr);
+      } catch (const std::exception& exc) {
+	shPtr.reset ();
+      }
+      return shPtr;
+    }
+
+    FlatPathPtr_t FlatPath::create (const DevicePtr_t& device,
+				    ConfigurationIn_t init,
+				    ConfigurationIn_t end,
+				    value_type distanceBetweenAxes,
+				    ConstraintSetPtr_t constraints)
+    {
+      FlatPath* ptr = new FlatPath (device, init, end, distanceBetweenAxes,
+				    constraints);
+      FlatPathPtr_t shPtr (ptr);
+      try {
+	ptr->init (shPtr);
+	hppDout (info, "success");
+      } catch (const std::exception& exc) {
+	hppDout (info, "failure");
+	shPtr.reset ();
+      }
+      return shPtr;
+    }
 
     void FlatPath::computeCoefficients ()
     {
@@ -67,6 +103,26 @@ namespace hpp {
       hppDout (info, "P_ [3]=" << P_ [3].transpose ());
       hppDout (info, "P_ [4]=" << P_ [4].transpose ());
       hppDout (info, "P_ [5]=" << P_ [5].transpose ());
+    }
+
+    void FlatPath::checkSteeringAngle ()
+    {
+      FlatPathPtr_t self (weak_.lock ());
+      DiscretizedPathValidationPtr_t dpv (DiscretizedPathValidation::create
+					  (device_, 1e-3));
+      dpv->add (JointBoundValidation::create (device_));
+      PathPtr_t unused;
+      PathValidationReportPtr_t report;
+      if (!dpv->validate (self, false, unused, report)) {
+	throw std::runtime_error ("Steering angle overflow.");
+      }
+    }
+
+    void FlatPath::init (FlatPathPtr_t self)
+    {
+      parent_t::init (self);
+      weak_ = self;
+      checkSteeringAngle ();
     }
 
     FlatPath::FlatPath (const DevicePtr_t& device,
@@ -137,11 +193,14 @@ namespace hpp {
       }
       // Compute value and derivatives of flat output
       value_type& t (param);
-      vector2_t P (P_ [0] + t*(P_ [1] + t*(P_ [2] + t*(P_[3] + t*(P_[4] +
-								  t*P_[5])))));
-      vector2_t dP (P_ [1] + t*(2*P_ [2] + t*(3*P_[3] + t*(4*P_[4] +
-							   t*5*P_[5]))));
-      vector2_t d2P (2*P_ [2] + t*(6*P_[3] + t*(12*P_[4] + t*20*P_[5])));
+      value_type t2 (t*t);
+      value_type t3 (t2*t);
+      value_type t4 (t3*t);
+      value_type t5 (t4*t);
+      vector2_t P (P_ [0] + t*P_ [1] + t2*P_ [2] + t3*P_[3] + t4*P_[4] +
+		   t5*P_[5]);
+      vector2_t dP (P_ [1] + 2*t*P_ [2] + 3*t2*P_[3] + 4*t3*P_[4] + 5*t4*P_[5]);
+      vector2_t d2P (2*P_ [2] + 6*t*P_[3] + 12*t2*P_[4] + 20*t3*P_[5]);
 
       value_type norm_dP (sqrt(dP.squaredNorm ()));
       result.segment <2> (0) = P;

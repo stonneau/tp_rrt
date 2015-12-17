@@ -37,9 +37,9 @@ namespace hpp {
     {
     public:
       /// Create instance and return shared pointer
-      static SteeringMethodPtr_t create (const DevicePtr_t& device)
+      static SteeringMethodPtr_t create (const ProblemPtr_t& problem)
       {
-	SteeringMethod* ptr = new SteeringMethod (device);
+	SteeringMethod* ptr = new SteeringMethod (problem);
 	SteeringMethodPtr_t shPtr (ptr);
 	ptr->init (shPtr);
 	return shPtr;
@@ -71,8 +71,8 @@ namespace hpp {
     protected:
       /// Constructor with robot
       /// Weighed distance is created from robot
-      SteeringMethod (const DevicePtr_t& device) :
-	core::SteeringMethod (), device_ (device), weak_ ()
+      SteeringMethod (const ProblemPtr_t& problem) :
+	core::SteeringMethod (problem), device_ (problem->robot ()), weak_ ()
 	{
 	  computeDistanceBetweenAxes ();
 	}

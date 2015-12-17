@@ -49,6 +49,11 @@ namespace hpp {
     typedef Node* NodePtr_t;
     typedef core::CollisionValidation CollisionValidation;
     typedef core::CollisionValidationPtr_t CollisionValidationPtr_t;
+    typedef core::DiscretizedPathValidation DiscretizedPathValidation;
+    typedef core::DiscretizedPathValidationPtr_t DiscretizedPathValidationPtr_t;
+    typedef core::JointBoundValidation JointBoundValidation;
+    typedef core::PathValidationReportPtr_t PathValidationReportPtr_t;
+    typedef core::ProblemPtr_t ProblemPtr_t;
     typedef core::interval_t interval_t;
     typedef core::value_type value_type;
     typedef core::Joint Joint;

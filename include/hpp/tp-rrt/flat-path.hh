@@ -49,13 +49,7 @@ namespace hpp {
       static FlatPathPtr_t create (const model::DevicePtr_t& device,
 				   ConfigurationIn_t init,
 				   ConfigurationIn_t end,
-				   value_type distanceBetweenAxes)
-      {
-	FlatPath* ptr = new FlatPath (device, init, end, distanceBetweenAxes);
-	FlatPathPtr_t shPtr (ptr);
-	ptr->init (shPtr);
-	return shPtr;
-      }
+				   value_type distanceBetweenAxes);
 
       /// Create instance and return shared pointer
       /// \param device Robot corresponding to configurations
@@ -66,14 +60,7 @@ namespace hpp {
 				   ConfigurationIn_t init,
 				   ConfigurationIn_t end,
 				   value_type distanceBetweenAxes,
-				   ConstraintSetPtr_t constraints)
-      {
-	FlatPath* ptr = new FlatPath (device, init, end, distanceBetweenAxes,
-				      constraints);
-	FlatPathPtr_t shPtr (ptr);
-	ptr->init (shPtr);
-	return shPtr;
-      }
+				   ConstraintSetPtr_t constraints);
 
       /// Create copy and return shared pointer
       /// \param path path to copy
@@ -177,11 +164,7 @@ namespace hpp {
       FlatPath (const FlatPath& path,
 		    const ConstraintSetPtr_t& constraints);
 
-      void init (FlatPathPtr_t self)
-      {
-	parent_t::init (self);
-	weak_ = self;
-      }
+      void init (FlatPathPtr_t self);
 
       void initCopy (FlatPathPtr_t self)
       {
@@ -193,7 +176,11 @@ namespace hpp {
 				 value_type param) const;
 
     private:
+      /// Compute coefficient of polynomial defining the trajectory of the flat
+      /// output.
       void computeCoefficients ();
+      /// Check that steering angle does not get out of bounds along a path.
+      void checkSteeringAngle ();
       DevicePtr_t device_;
       Configuration_t initial_;
       Configuration_t end_;
