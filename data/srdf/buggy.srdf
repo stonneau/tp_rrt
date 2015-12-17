@@ -1,3 +1,4 @@
 <?xml version="1.0"?>
 <robot name="buggy">
+    <disable_collisions link1="base_link" link2="virtual_front_wheel"/>
 </robot>
